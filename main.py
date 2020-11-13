@@ -45,7 +45,6 @@ def face_detect(img):
         biggest = faces
     else:
         return None
-    print("hihihihihi")
     print(np.squeeze(biggest))
     x,y,w,h = np.squeeze(biggest)
     # cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -81,6 +80,8 @@ def blob_process(eye, detector):
 # img = cv2.resize(img, (int(y0 * 0.5), int(x0 * 0.5)))
 
 if __name__ == '__main__':
+
+
     cap = cv2.VideoCapture(0)
     while True:
         _, img = cap.read()
