@@ -66,8 +66,8 @@ def cut_eyebrows(eye):
     eye = eye[eyebrow_h:height, 0:width]  # cut eyebrows out (15 px)
     return eye
 
-def blob_process(eye, detector):
-    ret, eye = cv2.threshold(eye, 60, 255, cv2.THRESH_BINARY)
+def blob_process(eye, threshold, detector):
+    ret, eye = cv2.threshold(eye, threshold, 255, cv2.THRESH_BINARY)
     print('eye_shape: ', eye.shape)
     eye = cv2.erode(eye, None, iterations=2) #1
     eye = cv2.dilate(eye, None, iterations=4) #2
@@ -79,10 +79,13 @@ def blob_process(eye, detector):
 # x0, y0, c0 = img.shape
 # img = cv2.resize(img, (int(y0 * 0.5), int(x0 * 0.5)))
 
+def nothing(x):
+    pass
+
 if __name__ == '__main__':
-
-
     cap = cv2.VideoCapture(0)
+    cv2.namedWindow('eye-tracker')
+    cv2.createTrackbar('threshold', 'eye-tracker', 0, 255, nothing)
     while True:
         _, img = cap.read()
         x0, y0, c0 = img.shape
@@ -98,10 +101,11 @@ if __name__ == '__main__':
             eyes_gray = eye_detect(face)
             for eye in eyes_gray:
                 if eye is not None:
+                    threshold = cv2.getTrackbarPos('threshold', 'eye-tracker')
                     eye = cut_eyebrows(eye)
-                    keypoints = blob_process(eye, detector)
+                    keypoints = blob_process(eye, threshold, detector)
                     eye = cv2.drawKeypoints(eye, keypoints, eye, (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-        cv2.imshow('my image', img)
+        cv2.imshow('eye-tracker', img)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     cap.release()
